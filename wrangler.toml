@@ -1,0 +1,3 @@
+name = "tgbot_reply_text_template_cfworker"
+main = "src/index.ts"
+compatibility_date = "2023-01-23"
