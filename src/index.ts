@@ -17,13 +17,36 @@ function postJson(url: string, obj: object) {
     });
 }
 
-async function sendMessage(botToken: string, chatId: number, text: string) {
-    console.log(`sendMessage: ${chatId} ${text}`);
+class TgBotClient {
+    constructor(public botToken: string) {
+    }
 
-    await postJson(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-        chat_id: chatId,
-        text,
-    });
+    get botBaseUrl() {
+        return `https://api.telegram.org/bot${this.botToken}`;
+    }
+
+    getMethodUrl(method: string) {
+        return this.botBaseUrl + '/' + method;
+    }
+
+    async sendMessage(chatId: number, text: string) {
+        console.log(`sendMessage: ${chatId} ${text}`);
+
+        await postJson(this.getMethodUrl('sendMessage'), {
+            chat_id: chatId,
+            text,
+        });
+    }
+
+    async replyMessage(chatId: number, replyTo: number, text: string) {
+        console.log(`replyMessage: ${chatId} ${text}`);
+
+        await postJson(this.getMethodUrl('sendMessage'), {
+            chat_id: chatId,
+            text,
+            reply_to_message_id: replyTo
+        });
+    }
 }
 
 async function handleTelegramUpdate(env: Env, update: any): Promise<Response> {
@@ -31,10 +54,17 @@ async function handleTelegramUpdate(env: Env, update: any): Promise<Response> {
 
 	const text: string | undefined = update.message?.text;
 	const chatId: number | undefined = update.message?.chat.id; // for reply to
+    const messageId: number = update.message?.message_id;
 
-	if (typeof text === 'string' && chatId) {
-		const replyContent = "Hello World!";
-		await sendMessage(env.TG_BOT_TOKEN, chatId, replyContent);
+	if (typeof text === 'string' && chatId && messageId) {
+        if (text === '/start') {
+			const replyContent = 'Hello World!'
+			await new TgBotClient(env.TG_BOT_TOKEN).sendMessage(chatId, replyContent);
+		}
+		else {
+			const replyContent = "Hello World!";
+			await new TgBotClient(env.TG_BOT_TOKEN).replyMessage(chatId, messageId, replyContent);
+		}
 	}
 
 	return new Response(); // telegram does not care this.
