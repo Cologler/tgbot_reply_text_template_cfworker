@@ -56,16 +56,16 @@ async function handleTelegramUpdate(env: Env, update: any): Promise<Response> {
 	const chatId: number | undefined = update.message?.chat.id; // for reply to
     const messageId: number = update.message?.message_id;
 
-	if (typeof text === 'string' && chatId && messageId) {
+    if (chatId && messageId) {
         if (text === '/start') {
-			const replyContent = 'Hello World!'
-			await new TgBotClient(env.TG_BOT_TOKEN).sendMessage(chatId, replyContent);
-		}
-		else {
-			const replyContent = "Hello World!";
-			await new TgBotClient(env.TG_BOT_TOKEN).replyMessage(chatId, messageId, replyContent);
-		}
-	}
+            const replyContent = 'Hello World!'
+            await new TgBotClient(env.TG_BOT_TOKEN).sendMessage(chatId, replyContent);
+        }
+        else {
+            const replyContent = "Hello World!";
+            await new TgBotClient(env.TG_BOT_TOKEN).replyMessage(chatId, messageId, replyContent);
+        }
+    }
 
 	return new Response(); // telegram does not care this.
 }
