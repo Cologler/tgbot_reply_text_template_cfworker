@@ -79,7 +79,7 @@ export default {
 
 		const url = new URL(request.url);
 
-        if (request.method === 'POST' && url.pathname === `/${env.TG_BOT_WEBHOOK_PATH}`) {
+        if (request.method === 'POST' && (!env.TG_BOT_WEBHOOK_PATH || url.pathname === `/${env.TG_BOT_WEBHOOK_PATH}`)) {
 			// request is sent by telegram
 
             if (request.headers.get('content-type') !== 'application/json') {
