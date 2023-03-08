@@ -90,6 +90,8 @@ export default {
             }
         }
 
-		return new Response("Hello World!");
+        return new Response('You are not allow to access the server.', {
+            status: 403
+        });
 	},
 };
